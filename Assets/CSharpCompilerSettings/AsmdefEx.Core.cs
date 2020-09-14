@@ -1,4 +1,3 @@
-#if UNITY_EDITOR && !PUBLISH_AS_DLL
 using System;
 using System.Collections;
 using System.Diagnostics;
@@ -576,4 +575,3 @@ namespace Coffee.CSharpCompilierSettings
         }
     }
 }
-#endif

@@ -1,17 +1,10 @@
-﻿using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Linq;
 using UnityEditor;
-using UnityEditor.Compilation;
 
 namespace CSharpCompilierSettings
 {
-    [InitializeOnLoad]
     internal static class Dev
     {
-        const string k_AssemblySrc = "Library/ScriptAssemblies/CSharpCompilerSettings.dll";
-        const string k_AssemblyDst = "Packages/CSharpCompilerSettings/Plugins/CSharpCompilerSettings.dll";
-
         private const string k_DebugModeText = "Csc Settings/Debug Mode";
         private const string k_DebugModeSymbol = "CSC_SETTINGS_DEBUG";
 
@@ -66,44 +59,6 @@ namespace CSharpCompilierSettings
                 ? symbols.Where(x => x != symbol).ToArray()
                 : symbols.Concat(new[] {symbol}).ToArray()
             );
-        }
-
-        private static void CopyAssemblyToPackage(string assemblyPath, CompilerMessage[] messages)
-        {
-            if (k_AssemblySrc != assemblyPath || !messages.All(x => x.type != CompilerMessageType.Error)) return;
-
-            UnityEngine.Debug.LogFormat("OnAssemblyCompilationFinished: Copy {0} to {1}", k_AssemblySrc, k_AssemblyDst);
-            CopyFileIfUpdated(k_AssemblySrc, k_AssemblyDst);
-        }
-
-        public static void CopyFileIfUpdated(string src, string dst)
-        {
-            src = Path.GetFullPath(src);
-            if (!File.Exists(src))
-                return;
-
-            dst = Path.GetFullPath(dst);
-            if (File.Exists(dst))
-            {
-                using (var srcFs = new FileStream(src, FileMode.Open))
-                using (var dstFs = new FileStream(dst, FileMode.Open))
-                using (var md5 = new MD5CryptoServiceProvider())
-                {
-                    if (md5.ComputeHash(srcFs).SequenceEqual(md5.ComputeHash(dstFs)))
-                        return;
-                }
-            }
-
-            var dir = Path.GetDirectoryName(dst);
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            File.Copy(src, dst, true);
-        }
-
-        static Dev()
-        {
-            CompilationPipeline.assemblyCompilationFinished += CopyAssemblyToPackage;
         }
     }
 }
