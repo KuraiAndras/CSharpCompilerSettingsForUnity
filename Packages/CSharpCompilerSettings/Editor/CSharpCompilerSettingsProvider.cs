@@ -2,7 +2,7 @@ using UnityEditor;
 
 namespace Coffee.CSharpCompilerSettings
 {
-    internal class CSharpCompilierSettingsProvider
+    internal class CSharpCompilerSettingsProvider
     {
         [SettingsProvider]
         private static SettingsProvider CreateSettingsProvider()

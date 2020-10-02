@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEditor.Compilation;
 using Assembly = System.Reflection.Assembly;
 
-namespace Coffee.CSharpCompilierSettings
+namespace Coffee.CSharpCompilerSettings
 {
     [InitializeOnLoad]
     internal static class Core

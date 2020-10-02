@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using LVersion = Coffee.CSharpCompilierSettings.CSharpLanguageVersion;
+using LVersion = Coffee.CSharpCompilerSettings.CSharpLanguageVersion;
 
-namespace Coffee.CSharpCompilierSettings
+namespace Coffee.CSharpCompilerSettings
 {
     internal class CscSettings : ScriptableObject
     {
