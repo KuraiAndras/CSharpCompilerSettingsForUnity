@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using UnityEditor;
 
 namespace Coffee.CSharpCompilerSettings
@@ -10,6 +11,11 @@ namespace Coffee.CSharpCompilerSettings
 
         private const string k_DevelopModeText = "Csc Settings/Develop Mode";
         private const string k_DevelopModeSymbol = "CSC_SETTINGS_DEVELOP";
+
+        private const string k_EditorAsmdefPath = "Packages/com.coffee.csharp-compiler-settings/Editor/CSharpCompilerSettings.Editor.asmdef";
+        private const string k_EditorAsmdef = "Assets/CSharpCompilerSettings/Dev/CSharpCompilerSettings.Editor.asmdef~";
+        private const string k_EditorAsmdefDevelop = "Assets/CSharpCompilerSettings/Dev/CSharpCompilerSettings.Editor.asmdef.Dev~";
+
 
         [MenuItem(k_DebugModeText, false)]
         private static void DebugMode()
@@ -28,6 +34,16 @@ namespace Coffee.CSharpCompilerSettings
         private static void DevelopMode()
         {
             SwitchSymbol(k_DevelopModeSymbol);
+            if (HasSymbol(k_DevelopModeSymbol))
+            {
+                File.Copy(k_EditorAsmdefDevelop, k_EditorAsmdefPath, true);
+            }
+            else
+            {
+                File.Copy(k_EditorAsmdef, k_EditorAsmdefPath, true);
+            }
+            AssetDatabase.ImportAsset(k_EditorAsmdefPath);
+            AssetDatabase.Refresh();
         }
 
         [MenuItem(k_DevelopModeText, true)]
