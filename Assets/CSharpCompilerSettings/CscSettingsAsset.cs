@@ -7,7 +7,7 @@ using LVersion = Coffee.CSharpCompilerSettings.CSharpLanguageVersion;
 
 namespace Coffee.CSharpCompilerSettings
 {
-    internal class CscSettings : ScriptableObject
+    internal class CscSettingsAsset : ScriptableObject
     {
         public const string k_SettingsPath = "ProjectSettings/CSharpCompilerSettings.asset";
 
@@ -22,18 +22,18 @@ namespace Coffee.CSharpCompilerSettings
             return new SerializedObject(instance);
         }
 
-        private static CscSettings Create()
+        private static CscSettingsAsset Create()
         {
-            s_Instance = CreateInstance<CscSettings>();
+            s_Instance = CreateInstance<CscSettingsAsset>();
             if (File.Exists(k_SettingsPath))
                 JsonUtility.FromJsonOverwrite(File.ReadAllText(k_SettingsPath), s_Instance);
             s_Instance.OnValidate();
             return s_Instance;
         }
 
-        private static CscSettings s_Instance;
+        private static CscSettingsAsset s_Instance;
 
-        public static CscSettings instance
+        public static CscSettingsAsset instance
         {
             get { return s_Instance ? s_Instance : s_Instance = Create(); }
         }

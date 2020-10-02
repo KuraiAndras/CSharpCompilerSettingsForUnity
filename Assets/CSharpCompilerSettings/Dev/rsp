@@ -16,8 +16,8 @@
 /r:"${APP_CONTENTS}/MonoBleedingEdge/lib/mono/2.0-api/System.Core.dll"
 
 "Assets/CSharpCompilerSettings/AssemblyInfo.cs"
-"Assets/CSharpCompilerSettings/AsmdefEx.Core.cs"
-"Assets/CSharpCompilerSettings/CscSettings.cs"
+"Assets/CSharpCompilerSettings/Core.cs"
+"Assets/CSharpCompilerSettings/CscSettingsAsset.cs"
 "Assets/CSharpCompilerSettings/CSharpLanguageVersion.cs"
 "Assets/CSharpCompilerSettings/CompilerFilter.cs"
 "Assets/CSharpCompilerSettings/CompilerInfo.cs"

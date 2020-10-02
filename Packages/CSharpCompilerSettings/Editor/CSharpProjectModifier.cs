@@ -7,7 +7,7 @@ namespace Coffee.CSharpCompilerSettings
     {
         private static string OnGeneratedCSProject(string path, string content)
         {
-            var setting = CscSettings.instance;
+            var setting = CscSettingsAsset.instance;
             if (setting.UseDefaultCompiler) return content;
 
             // Language version.

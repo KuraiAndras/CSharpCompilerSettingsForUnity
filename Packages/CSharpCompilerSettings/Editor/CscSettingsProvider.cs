@@ -2,12 +2,12 @@ using UnityEditor;
 
 namespace Coffee.CSharpCompilerSettings
 {
-    internal class CSharpCompilerSettingsProvider
+    internal class CscSettingsProvider
     {
         [SettingsProvider]
         private static SettingsProvider CreateSettingsProvider()
         {
-            var serializedObject = CscSettings.GetSerializedObject();
+            var serializedObject = CscSettingsAsset.GetSerializedObject();
             var keywords = SettingsProvider.GetSearchKeywordsFromSerializedObject(serializedObject);
             return new SettingsProvider("Project/C# Compiler", SettingsScope.Project)
             {
@@ -19,7 +19,7 @@ namespace Coffee.CSharpCompilerSettings
 
         private static void OnGUI(string searchContext)
         {
-            var serializedObject = CscSettings.GetSerializedObject();
+            var serializedObject = CscSettingsAsset.GetSerializedObject();
             var spUseDefaultCompiler = serializedObject.FindProperty("m_UseDefaultCompiler");
             var spPackageName = serializedObject.FindProperty("m_PackageName");
             var spPackageVersion = serializedObject.FindProperty("m_PackageVersion");

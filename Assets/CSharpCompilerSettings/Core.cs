@@ -19,7 +19,7 @@ namespace Coffee.CSharpCompilerSettings
         private const string k_LogHeader = "<b><color=#aa2222>[CscSettings]</color></b> ";
         public static void LogDebug(string format, params object[] args)
         {
-            if (CscSettings.instance.EnableDebugLog)
+            if (CscSettingsAsset.instance.EnableDebugLog)
                 LogInfo(format, args);
         }
 
@@ -42,7 +42,7 @@ namespace Coffee.CSharpCompilerSettings
                 .Call("DirtyAllScripts");
         }
 
-        private static void ChangeCompilerProcess(object compiler, object scriptAssembly, CscSettings setting)
+        private static void ChangeCompilerProcess(object compiler, object scriptAssembly, CscSettingsAsset setting)
         {
             var tProgram = Type.GetType("UnityEditor.Utils.Program, UnityEditor");
             var tScriptCompilerBase = Type.GetType("UnityEditor.Scripting.Compilers.ScriptCompilerBase, UnityEditor");
@@ -122,7 +122,7 @@ namespace Coffee.CSharpCompilerSettings
                     return;
                 }
 
-                var settings = CscSettings.instance;
+                var settings = CscSettingsAsset.instance;
                 if (settings.UseDefaultCompiler)
                     return;
 
@@ -148,7 +148,7 @@ namespace Coffee.CSharpCompilerSettings
 
         static Core()
         {
-            if (CscSettings.instance.EnableDebugLog)
+            if (CscSettingsAsset.instance.EnableDebugLog)
             {
                 var sb = new StringBuilder("<b>InitializeOnLoad</b>. Loaded assemblies:\n");
                 foreach (var asm in Type.GetType("UnityEditor.EditorAssemblies, UnityEditor").Get("loadedAssemblies") as Assembly[])
