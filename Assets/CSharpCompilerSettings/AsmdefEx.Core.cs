@@ -17,11 +17,9 @@ namespace Coffee.CSharpCompilerSettings
     internal static class Core
     {
         private const string k_LogHeader = "<b><color=#aa2222>[CscSettings]</color></b> ";
-        private static bool LogDebugEnabled { get; }
-
         public static void LogDebug(string format, params object[] args)
         {
-            if (LogDebugEnabled)
+            if (CscSettings.instance.EnableDebugLog)
                 LogInfo(format, args);
         }
 
@@ -150,11 +148,7 @@ namespace Coffee.CSharpCompilerSettings
 
         static Core()
         {
-            LogDebugEnabled = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup)
-                .Split(';', ',')
-                .Any(x => x == "CSC_SETTINGS_DEBUG");
-
-            if (LogDebugEnabled)
+            if (CscSettings.instance.EnableDebugLog)
             {
                 var sb = new StringBuilder("<b>InitializeOnLoad</b>. Loaded assemblies:\n");
                 foreach (var asm in Type.GetType("UnityEditor.EditorAssemblies, UnityEditor").Get("loadedAssemblies") as Assembly[])

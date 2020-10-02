@@ -24,6 +24,7 @@ namespace Coffee.CSharpCompilerSettings
             var spPackageName = serializedObject.FindProperty("m_PackageName");
             var spPackageVersion = serializedObject.FindProperty("m_PackageVersion");
             var spLanguageVersion = serializedObject.FindProperty("m_LanguageVersion");
+            var spEnableDebugLog = serializedObject.FindProperty("m_EnableDebugLog");
 
             using (var ccs = new EditorGUI.ChangeCheckScope())
             {
@@ -35,6 +36,10 @@ namespace Coffee.CSharpCompilerSettings
             EditorGUILayout.PropertyField(spPackageName);
             EditorGUILayout.PropertyField(spPackageVersion);
             EditorGUILayout.PropertyField(spLanguageVersion);
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.PropertyField(spEnableDebugLog);
 
             serializedObject.ApplyModifiedProperties();
         }

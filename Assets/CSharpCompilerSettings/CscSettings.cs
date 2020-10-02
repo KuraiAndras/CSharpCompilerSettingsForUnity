@@ -15,6 +15,7 @@ namespace Coffee.CSharpCompilerSettings
         [SerializeField] private string m_PackageName = "Microsoft.Net.Compilers";
         [SerializeField] private string m_PackageVersion = "3.5.0";
         [SerializeField] private CSharpLanguageVersion m_LanguageVersion = CSharpLanguageVersion.Latest;
+        [SerializeField] private bool m_EnableDebugLog = false;
 
         internal static SerializedObject GetSerializedObject()
         {
@@ -63,6 +64,11 @@ namespace Coffee.CSharpCompilerSettings
                     default: return "latest";
                 }
             }
+        }
+
+        public bool EnableDebugLog
+        {
+            get { return m_EnableDebugLog; }
         }
 
         private void OnValidate()
