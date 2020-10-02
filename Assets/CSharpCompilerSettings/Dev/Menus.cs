@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using UnityEditor;
 
-namespace CSharpCompilierSettings
+namespace Coffee.CSharpCompilerSettings
 {
-    internal static class Dev
+    internal static class Menus
     {
         private const string k_DebugModeText = "Csc Settings/Debug Mode";
         private const string k_DebugModeSymbol = "CSC_SETTINGS_DEBUG";

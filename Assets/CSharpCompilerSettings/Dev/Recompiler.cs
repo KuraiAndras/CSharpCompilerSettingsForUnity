@@ -6,7 +6,7 @@ using UnityEditor.Compilation;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Coffee.CSharpCompilierSettings
+namespace Coffee.CSharpCompilerSettings
 {
     internal class Recompiler : ScriptableSingleton<Recompiler>
     {

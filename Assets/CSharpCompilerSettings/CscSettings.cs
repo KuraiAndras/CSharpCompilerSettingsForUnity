@@ -1,27 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using LVersion = Coffee.CSharpCompilierSettings.CSharpLanguageVersion;
 
 namespace Coffee.CSharpCompilierSettings
 {
-    internal enum CSharpLanguageVersion
-    {
-        CSharp7 = 700,
-        CSharp7_1 = 701,
-        CSharp7_2 = 702,
-        CSharp7_3 = 703,
-        CSharp8 = 800,
-        CSharp9 = 900,
-        Preview = int.MaxValue - 1,
-        Latest = int.MaxValue,
-    }
-
     internal class CscSettings : ScriptableObject
     {
         public const string k_SettingsPath = "ProjectSettings/CSharpCompilerSettings.asset";
@@ -126,58 +111,6 @@ namespace Coffee.CSharpCompilierSettings
             symbols = version <= current
                 ? symbols.Union(new[] {symbol}).ToArray()
                 : symbols.Except(new[] {symbol}).ToArray();
-        }
-    }
-
-    internal class CscSettingsProvider
-    {
-        [SettingsProvider]
-        private static SettingsProvider CreateSettingsProvider()
-        {
-            var serializedObject = CscSettings.GetSerializedObject();
-            var keywords = SettingsProvider.GetSearchKeywordsFromSerializedObject(serializedObject);
-            return new SettingsProvider("Project/C# Compiler", SettingsScope.Project)
-            {
-                label = "C# Compiler",
-                keywords = keywords,
-                guiHandler = OnGUI,
-            };
-        }
-
-        private static void OnGUI(string searchContext)
-        {
-            var serializedObject = CscSettings.GetSerializedObject();
-            var spUseDefaultCompiler = serializedObject.FindProperty("m_UseDefaultCompiler");
-            var spPackageName = serializedObject.FindProperty("m_PackageName");
-            var spPackageVersion = serializedObject.FindProperty("m_PackageVersion");
-            var spLanguageVersion = serializedObject.FindProperty("m_LanguageVersion");
-
-            using (var ccs = new EditorGUI.ChangeCheckScope())
-            {
-                EditorGUILayout.PropertyField(spUseDefaultCompiler);
-                if (ccs.changed)
-                    Core.RequestScriptCompilation();
-            }
-
-            EditorGUILayout.PropertyField(spPackageName);
-            EditorGUILayout.PropertyField(spPackageVersion);
-            EditorGUILayout.PropertyField(spLanguageVersion);
-
-            serializedObject.ApplyModifiedProperties();
-        }
-    }
-
-    internal class CSProjectModifier : AssetPostprocessor
-    {
-        private static string OnGeneratedCSProject(string path, string content)
-        {
-            var setting = CscSettings.instance;
-            if (setting.UseDefaultCompiler) return content;
-
-            // Language version.
-            content = Regex.Replace(content, "<LangVersion>.*</LangVersion>", "<LangVersion>" + setting.LanguageVersion + "</LangVersion>", RegexOptions.Multiline);
-
-            return content;
         }
     }
 }
