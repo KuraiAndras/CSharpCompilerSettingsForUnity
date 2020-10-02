@@ -11,7 +11,7 @@ namespace Coffee.CSharpCompilerSettings
     internal class Recompiler : ScriptableSingleton<Recompiler>
     {
         private const string k_AssemblySrc = "Library/ScriptAssemblies/CSharpCompilerSettings.dll";
-        private const string k_ResponseFileSrc = "Assets/CSharpCompilerSettings/rsp";
+        private const string k_ResponseFileSrc = "Assets/CSharpCompilerSettings/Dev/rsp";
         private const string k_ResponseFileDst = "Temp/CSharpCompilerSettings.rsp";
 
         [SerializeField] private bool requested;
