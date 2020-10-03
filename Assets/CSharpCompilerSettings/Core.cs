@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,13 +11,19 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditor.Compilation;
 using Assembly = System.Reflection.Assembly;
+using Debug = UnityEngine.Debug;
 
 namespace Coffee.CSharpCompilerSettings
 {
     [InitializeOnLoad]
     internal static class Core
     {
-        private const string k_LogHeader = "<b><color=#aa2222>[CscSettings]</color></b> ";
+        private static string k_LogHeader = "<b><color=#aa2222>[CscSettings]</color></b> ";
+        static Dictionary<string, bool> s_EnableAsmdefs = new Dictionary<string, bool>();
+        static Dictionary<string, string> s_AssemblyNames = new Dictionary<string, string>();
+        private static bool IsGlobal => typeof(Core).Assembly.GetName().Name == "CSharpCompilerSettings";
+        private static bool EnableDebugLog => CscSettingsAsset.instance.EnableDebugLog;
+
         public static void LogDebug(string format, params object[] args)
         {
             if (CscSettingsAsset.instance.EnableDebugLog)
@@ -40,6 +47,56 @@ namespace Coffee.CSharpCompilerSettings
         {
             Type.GetType("UnityEditor.Scripting.ScriptCompilation.EditorCompilationInterface, UnityEditor")
                 .Call("DirtyAllScripts");
+        }
+
+        private static string GetAssemblyName(string asmdefPath)
+        {
+            if (string.IsNullOrEmpty(asmdefPath)) return null;
+
+            string assemblyName;
+            if (s_AssemblyNames.TryGetValue(asmdefPath, out assemblyName)) return assemblyName;
+
+            var m = Regex.Match(File.ReadAllText(asmdefPath), "\"name\":\\s*\"([^\"]*)\"");
+            assemblyName = m.Success ? m.Groups[1].Value : "";
+            s_AssemblyNames[asmdefPath] = assemblyName;
+
+            return assemblyName;
+        }
+
+        public static bool HasPortableDll(string asmdefPath)
+        {
+            if (string.IsNullOrEmpty(asmdefPath)) return false;
+            bool enabled;
+            if (s_EnableAsmdefs.TryGetValue(asmdefPath, out enabled)) return enabled;
+
+            enabled = Directory.GetFiles(Path.GetDirectoryName(asmdefPath))
+                .Any(x => Regex.IsMatch(x, "CSharpCompilerSettings_[0-9a-zA-Z]{32}.dll"));
+
+            s_EnableAsmdefs[asmdefPath] = enabled;
+
+            return enabled;
+        }
+
+        public static bool IsInSameDirectory(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return false;
+
+            var dir = Path.GetFullPath(Path.GetDirectoryName(path));
+            var coreAssemblyLocationDir = Path.GetFullPath(Path.GetDirectoryName(typeof(Core).Assembly.Location));
+            return dir == coreAssemblyLocationDir;
+        }
+
+        static string FindAsmdef()
+        {
+            return Directory.GetFiles(Path.GetDirectoryName(typeof(Core).Assembly.Location), "*.asmdef")
+                .FirstOrDefault(x => x.EndsWith(".asmdef"));
+        }
+
+        static CscSettingsAsset GetSettings()
+        {
+            return IsGlobal
+                ? CscSettingsAsset.instance
+                : (CscSettingsAsset.GetAtPath(FindAsmdef()) ?? ScriptableObject.CreateInstance<CscSettingsAsset>());
         }
 
         private static void ChangeCompilerProcess(object compiler, object scriptAssembly, CscSettingsAsset setting)
@@ -115,20 +172,13 @@ namespace Coffee.CSharpCompilerSettings
         {
             try
             {
-                LogDebug("Assembly compilation started: {0}", name);
-                if (Path.GetFileNameWithoutExtension(name) == "CSharpCompilerSettings")
+                var assemblyName = Path.GetFileNameWithoutExtension(name);
+                LogDebug("Assembly compilation started: {0}", assemblyName);
+                if (assemblyName == typeof(Core).Assembly.GetName().Name)
                 {
-                    LogDebug("  <color=#bbbb44><Skipped> Assembly 'CSharpCompilerSettings' requires default csc.</color>");
+                    LogDebug("  <color=#bbbb44><Skipped> Assembly '{0}' requires default csc.</color>", assemblyName);
                     return;
                 }
-
-                var settings = CscSettingsAsset.instance;
-                if (settings.UseDefaultCompiler)
-                    return;
-
-                var assemblyName = Path.GetFileNameWithoutExtension(name);
-                if (assemblyName == typeof(Core).Assembly.GetName().Name)
-                    return;
 
                 var tEditorCompilationInterface = Type.GetType("UnityEditor.Scripting.ScriptCompilation.EditorCompilationInterface, UnityEditor");
                 var compilerTasks = tEditorCompilationInterface.Get("Instance").Get("compilationTask").Get("compilerTasks") as IDictionary;
@@ -136,8 +186,24 @@ namespace Coffee.CSharpCompilerSettings
                 if (scriptAssembly == null)
                     return;
 
+                var asmdefPath = scriptAssembly.Get("OriginPath") as string;
+                if (IsGlobal && HasPortableDll(asmdefPath))
+                {
+                    LogDebug("  <color=#bbbb44><Skipped> Local CSharpCompilerSettings assembly is found.</color>");
+                    return;
+                }
+                if (!IsGlobal && IsInSameDirectory(asmdefPath))
+                {
+                    LogDebug("  <color=#bbbb44><Skipped> '{0}' is not target assembly.</color>", assemblyName);
+                    return;
+                }
+
+                var settings = GetSettings();;
+                if (!settings || settings.UseDefaultCompiler)
+                    return;
+
                 // Create new compiler to recompile.
-                LogDebug("Assembly compilation started: <b>{0} should be recompiled.</b>", assemblyName);
+                LogDebug("Assembly compilation started: <b>{0} should be recompiled.</b>\n{1}", assemblyName, JsonUtility.ToJson(settings));
                 ChangeCompilerProcess(compilerTasks[scriptAssembly], scriptAssembly, settings);
             }
             catch (Exception e)
@@ -148,6 +214,16 @@ namespace Coffee.CSharpCompilerSettings
 
         static Core()
         {
+            if (!IsGlobal)
+            {
+                var targetAssemblyName = GetAssemblyName(FindAsmdef());
+                if (string.IsNullOrEmpty(targetAssemblyName))
+                {
+                    LogExeption(new Exception(string.Format("Target assembly is not found. {0}", typeof(Core).Assembly.Location.Replace(Environment.CurrentDirectory, "."))));
+                }
+                k_LogHeader = string.Format("<b><color=#aa2222>[CscSettings ({0})]</color></b> ", targetAssemblyName);
+            }
+
             if (CscSettingsAsset.instance.EnableDebugLog)
             {
                 var sb = new StringBuilder("<b>InitializeOnLoad</b>. Loaded assemblies:\n");
@@ -167,8 +243,18 @@ namespace Coffee.CSharpCompilerSettings
             var assembly = typeof(Core).Assembly;
             var assemblyName = assembly.GetName().Name;
             var location = assembly.Location.Replace(Environment.CurrentDirectory, ".");
-            LogInfo("Start watching assembly compilation: assembly = {0} ({1})", assemblyName, location);
+            LogInfo("Start watching assembly compilation: assembly = {0} [Global: {2}] ({1})", assemblyName, location, assembly.GetName().Name == "CSharpCompilerSettings");
             CompilationPipeline.assemblyCompilationStarted += OnAssemblyCompilationStarted;
+
+            var settings = GetSettings();
+            if (!settings || settings.UseDefaultCompiler) return;
+
+            // csc is not installed.
+            var compilerInfo = CustomCompiler.GetInstalledPath(settings.PackageId);
+            if (!compilerInfo.HasValue)
+            {
+                LogExeption(new Exception(string.Format("Custom csc is not installed. {0}", settings.PackageId)));
+            }
         }
     }
 }

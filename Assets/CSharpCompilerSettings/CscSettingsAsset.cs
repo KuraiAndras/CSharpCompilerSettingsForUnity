@@ -38,6 +38,25 @@ namespace Coffee.CSharpCompilerSettings
             get { return s_Instance ? s_Instance : s_Instance = Create(); }
         }
 
+        public string PackageName
+        {
+            get { return m_PackageName; }
+            set { m_PackageName = value; }
+        }
+
+
+        public string PackageVersion
+        {
+            get { return m_PackageVersion; }
+            set { m_PackageVersion = value; }
+        }
+
+        public CSharpLanguageVersion CSharpLanguageVersion
+        {
+            get { return m_LanguageVersion; }
+            set { m_LanguageVersion = value; }
+        }
+
         public string PackageId
         {
             get { return m_PackageName + "." + m_PackageVersion; }
@@ -46,6 +65,7 @@ namespace Coffee.CSharpCompilerSettings
         public bool UseDefaultCompiler
         {
             get { return m_UseDefaultCompiler; }
+            set { m_UseDefaultCompiler = value; }
         }
 
         public string LanguageVersion
@@ -117,6 +137,25 @@ namespace Coffee.CSharpCompilerSettings
             symbols = version <= current
                 ? symbols.Union(new[] {symbol}).ToArray()
                 : symbols.Except(new[] {symbol}).ToArray();
+        }
+
+        public static CscSettingsAsset GetAtPath(string path)
+        {
+            try
+            {
+                return CreateFromJson(AssetImporter.GetAtPath(path).userData);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static CscSettingsAsset CreateFromJson(string json = "")
+        {
+            var setting = CreateInstance<CscSettingsAsset>();
+            JsonUtility.FromJsonOverwrite(File.ReadAllText(k_SettingsPath), setting);
+            return setting;
         }
     }
 }
