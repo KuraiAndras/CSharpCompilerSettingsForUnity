@@ -34,3 +34,6 @@ Assets/Plugins/
 
 Test/Assets/Plugins.meta
 Test/Assets/Plugins/
+
+!ChangeAssemblyName/*.csproj
+!ChangeAssemblyName/*.sln
