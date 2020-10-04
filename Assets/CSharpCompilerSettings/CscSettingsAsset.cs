@@ -91,44 +91,28 @@ namespace Coffee.CSharpCompilerSettings
             get { return m_EnableDebugLog; }
         }
 
-        private void OnValidate()
+        public string AdditionalSymbols
         {
-            if (s_Instance != this) return;
-            Core.LogDebug("OnValidate => " + JsonUtility.ToJson(this));
-            File.WriteAllText(k_SettingsPath, JsonUtility.ToJson(this, true));
-
-            var current = s_Instance.m_LanguageVersion;
-            current = s_Instance.UseDefaultCompiler
-                ? 0
-                : current == LVersion.Preview
-                    ? LVersion.CSharp9
-                    : current == LVersion.Latest
-                        ? LVersion.CSharp8
-                        : current;
-
-            foreach (var group in (BuildTargetGroup[]) Enum.GetValues(typeof(BuildTargetGroup)))
+            get
             {
-                if ((int) group <= 0 || typeof(BuildTargetGroup).GetMember(group.ToString())[0].GetCustomAttributes(typeof(ObsoleteAttribute), false).Length != 0) continue;
+                var current = s_Instance.m_LanguageVersion;
+                current = s_Instance.UseDefaultCompiler
+                    ? 0
+                    : current == LVersion.Preview
+                        ? LVersion.CSharp9
+                        : current == LVersion.Latest
+                            ? LVersion.CSharp8
+                            : current;
 
-                try
-                {
-                    var symbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(group).Split(';', ',');
-                    var oldSymbols = symbols;
-                    LanguageVersionCheck(ref symbols, current, LVersion.CSharp7, "CSHARP_7_OR_LATER");
-                    LanguageVersionCheck(ref symbols, current, LVersion.CSharp7_1, "CSHARP_7_1_OR_LATER");
-                    LanguageVersionCheck(ref symbols, current, LVersion.CSharp7_2, "CSHARP_7_2_OR_LATER");
-                    LanguageVersionCheck(ref symbols, current, LVersion.CSharp7_3, "CSHARP_7_3_OR_LATER");
-                    LanguageVersionCheck(ref symbols, current, LVersion.CSharp8, "CSHARP_8_OR_LATER");
-                    LanguageVersionCheck(ref symbols, current, LVersion.CSharp9, "CSHARP_9_OR_LATER");
-                    var newSymbols = symbols;
-
-                    if (oldSymbols.SequenceEqual(newSymbols)) continue;
-
-                    PlayerSettings.SetScriptingDefineSymbolsForGroup(group, string.Join(";", newSymbols));
-                }
-                catch
-                {
-                }
+                StringBuilder sb = new StringBuilder();
+                if (LVersion.CSharp7 <= current) sb.Append("CSHARP_7_OR_NEWER;");
+                if (LVersion.CSharp7_1 <= current) sb.Append("CSHARP_7_1_OR_NEWER;");
+                if (LVersion.CSharp7_2 <= current) sb.Append("CSHARP_7_2_OR_NEWER;");
+                if (LVersion.CSharp7_3 <= current) sb.Append("CSHARP_7_3_OR_NEWER;");
+                if (LVersion.CSharp8 <= current) sb.Append("CSHARP_8_OR_NEWER;");
+                if (LVersion.CSharp9 <= current) sb.Append("CSHARP_9_OR_NEWER;");
+                if (LVersion.CSharp7 <= current) sb.Append("CSHARP_7_OR_NEWER;");
+                return sb.ToString();
             }
         }
 

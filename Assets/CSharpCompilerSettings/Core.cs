@@ -99,6 +99,18 @@ namespace Coffee.CSharpCompilerSettings
                 : (CscSettingsAsset.GetAtPath(FindAsmdef()) ?? ScriptableObject.CreateInstance<CscSettingsAsset>());
         }
 
+        public static string[] ModifyDefineSymbols(IEnumerable<string> defines, string modifySymbols)
+        {
+            var symbols = modifySymbols.Split(';', ',');
+            var add = symbols.Where(x => 0 < x.Length && !x.StartsWith("!"));
+            var remove = symbols.Where(x => 1 < x.Length && x.StartsWith("!")).Select(x => x.Substring(1));
+            return defines
+                .Union(add)
+                .Except(remove)
+                .Distinct()
+                .ToArray();
+        }
+
         private static void ChangeCompilerProcess(object compiler, object scriptAssembly, CscSettingsAsset setting)
         {
             var tProgram = Type.GetType("UnityEditor.Utils.Program, UnityEditor");
@@ -137,6 +149,17 @@ namespace Coffee.CSharpCompilerSettings
             text = Regex.Replace(text, "\n/langversion:[^\n]+\n", "\n/langversion:" + setting.LanguageVersion + "\n");
             text = Regex.Replace(text, "\n/debug\n", "\n/debug:portable\n");
             text += "\n/preferreduilang:en-US";
+
+
+            // Modify scripting define symbols.
+            LogDebug("Modify scripting define symbols: {0}", responseFile);
+            var defines = Regex.Matches(text, "^/define:(.*)$", RegexOptions.Multiline)
+                .Cast<Match>()
+                .Select(x => x.Groups[1].Value);
+
+            text = Regex.Replace(text, "[\r\n]+/define:[^\r\n]+", "");
+            foreach (var d in ModifyDefineSymbols(defines, setting.AdditionalSymbols))
+                text += "\n/define:" + d;
 
             // Change exe file path.
             LogDebug("Change csc to {0}", compilerInfo);
