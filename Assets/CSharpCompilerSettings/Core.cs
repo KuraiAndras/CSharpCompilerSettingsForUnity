@@ -38,15 +38,14 @@ namespace Coffee.CSharpCompilerSettings
                 UnityEngine.Debug.LogFormat(k_LogHeader + format, args);
         }
 
-        public static void LogExeption(Exception e)
+        public static void LogException(Exception e)
         {
             UnityEngine.Debug.LogException(new Exception(k_LogHeader + e.Message, e.InnerException));
         }
 
-        public static void RequestScriptCompilation()
+        public static void LogException(string format, params object[] args)
         {
-            Type.GetType("UnityEditor.Scripting.ScriptCompilation.EditorCompilationInterface, UnityEditor")
-                .Call("DirtyAllScripts");
+            LogException(new Exception(string.Format(format, args)));
         }
 
         private static string GetAssemblyName(string asmdefPath)
@@ -231,7 +230,7 @@ namespace Coffee.CSharpCompilerSettings
             }
             catch (Exception e)
             {
-                LogExeption(e);
+                LogException(e);
             }
         }
 
@@ -242,7 +241,6 @@ namespace Coffee.CSharpCompilerSettings
                 var targetAssemblyName = GetAssemblyName(FindAsmdef());
                 if (string.IsNullOrEmpty(targetAssemblyName))
                 {
-                    LogExeption(new Exception(string.Format("Target assembly is not found. {0}", typeof(Core).Assembly.Location.Replace(Environment.CurrentDirectory, "."))));
                 }
                 k_LogHeader = string.Format("<b><color=#aa2222>[CscSettings ({0})]</color></b> ", targetAssemblyName);
             }
@@ -258,6 +256,7 @@ namespace Coffee.CSharpCompilerSettings
                         sb.AppendFormat("  > {0}:\t{1}\n", name, "APP_PATH/.../" + Path.GetFileName(path));
                     else
                         sb.AppendFormat("  > <color=#22aa22><b>{0}</b></color>:\t{1}\n", name, path.Replace(Environment.CurrentDirectory, "."));
+                    LogException("Target assembly is not found. {0}", typeof(Core).Assembly.Location.Replace(Environment.CurrentDirectory, "."));
                 }
 
                 LogDebug(sb.ToString());
@@ -276,7 +275,7 @@ namespace Coffee.CSharpCompilerSettings
             var compilerInfo = CustomCompiler.GetInstalledPath(settings.PackageId);
             if (!compilerInfo.HasValue)
             {
-                LogExeption(new Exception(string.Format("Custom csc is not installed. {0}", settings.PackageId)));
+                LogException("Custom csc is not installed. {0}", settings.PackageId);
             }
         }
     }

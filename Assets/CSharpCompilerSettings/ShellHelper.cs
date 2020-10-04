@@ -30,7 +30,7 @@ namespace Coffee.CSharpCompilerSettings
             if (p.ExitCode != 0)
             {
                 var ex = new Exception(p.StandardError.ReadToEnd());
-                Core.LogExeption(ex);
+                Core.LogException(ex);
                 throw ex;
             }
         }

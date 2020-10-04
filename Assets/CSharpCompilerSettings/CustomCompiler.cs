@@ -38,7 +38,7 @@ namespace Coffee.CSharpCompilerSettings
             }
             catch (Exception ex)
             {
-                Core.LogExeption(ex);
+                Core.LogException(ex);
             }
 
             s_cachedPackageId = packageId;
