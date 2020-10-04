@@ -11,7 +11,6 @@ namespace Coffee.CSharpCompilerSettings
         static CompilerInfo? s_compilerInfo;
         static string s_cachedPackageId;
 
-
         private static string PathCombine(params string[] components)
         {
             string path = components[0];

@@ -6,9 +6,6 @@ namespace Coffee.CSharpCompilerSettings
 {
     internal static class Menus
     {
-        private const string k_DebugModeText = "Csc Settings/Debug Mode";
-        private const string k_DebugModeSymbol = "CSC_SETTINGS_DEBUG";
-
         private const string k_DevelopModeText = "Csc Settings/Develop Mode";
         private const string k_DevelopModeSymbol = "CSC_SETTINGS_DEVELOP";
 
@@ -16,19 +13,6 @@ namespace Coffee.CSharpCompilerSettings
         private const string k_EditorAsmdef = "Assets/CSharpCompilerSettings/Dev/CSharpCompilerSettings.Editor.asmdef~";
         private const string k_EditorAsmdefDevelop = "Assets/CSharpCompilerSettings/Dev/CSharpCompilerSettings.Editor.asmdef.Dev~";
 
-
-        [MenuItem(k_DebugModeText, false)]
-        private static void DebugMode()
-        {
-            SwitchSymbol(k_DebugModeSymbol);
-        }
-
-        [MenuItem(k_DebugModeText, true)]
-        private static bool DebugMode_Valid()
-        {
-            Menu.SetChecked(k_DebugModeText, HasSymbol(k_DebugModeSymbol));
-            return true;
-        }
 
         [MenuItem(k_DevelopModeText, false)]
         private static void DevelopMode()
@@ -42,6 +26,7 @@ namespace Coffee.CSharpCompilerSettings
             {
                 File.Copy(k_EditorAsmdef, k_EditorAsmdefPath, true);
             }
+
             AssetDatabase.ImportAsset(k_EditorAsmdefPath);
             AssetDatabase.Refresh();
         }

@@ -36,15 +36,23 @@ namespace Coffee.CSharpCompilerSettings
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("m_EnableDebugLog"));
 
-            if (GUILayout.Button("Revert"))
+            // Controls
+            using (new EditorGUI.DisabledScope(!serializedObject.hasModifiedProperties))
+            using (new GUILayout.HorizontalScope())
             {
-                serializedObject = new SerializedObject(CscSettingsAsset.instance);
-            }
-            if (GUILayout.Button("Apply"))
-            {
-                serializedObject.ApplyModifiedProperties();
-                File.WriteAllText(CscSettingsAsset.k_SettingsPath, JsonUtility.ToJson(serializedObject.targetObject, true));
-                RequestScriptCompilation();
+                GUILayout.FlexibleSpace();
+
+                if (GUILayout.Button("Revert"))
+                {
+                    serializedObject = new SerializedObject(CscSettingsAsset.instance);
+                }
+
+                if (GUILayout.Button("Apply"))
+                {
+                    serializedObject.ApplyModifiedProperties();
+                    File.WriteAllText(CscSettingsAsset.k_SettingsPath, JsonUtility.ToJson(serializedObject.targetObject, true));
+                    RequestScriptCompilation();
+                }
             }
         }
 

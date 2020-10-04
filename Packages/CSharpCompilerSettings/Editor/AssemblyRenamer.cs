@@ -1,10 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
-
 
 namespace Coffee.CSharpCompilerSettings
 {
@@ -43,14 +40,14 @@ namespace Coffee.CSharpCompilerSettings
             }
 
             // Start compilation process.
-            Debug.LogFormat("Rename: Change assembly name\n  command={0} {1}\n", psi.FileName, psi.Arguments);
+            Core.LogDebug("Rename: Change assembly name\n  command={0} {1}\n", psi.FileName, psi.Arguments);
             var p = Process.Start(psi);
             p.Exited += (_, __) =>
             {
                 if (p.ExitCode == 0)
-                    Debug.Log("Rename: success.\n" + p.StandardOutput.ReadToEnd());
+                    Core.LogDebug("Rename: success.\n" + p.StandardOutput.ReadToEnd());
                 else
-                    Debug.LogError("Rename: failure.\n" + p.StandardError.ReadToEnd());
+                    Core.LogException("Rename: failure.\n" + p.StandardError.ReadToEnd());
             };
             p.EnableRaisingEvents = true;
 

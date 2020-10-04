@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 using LVersion = Coffee.CSharpCompilerSettings.CSharpLanguageVersion;
@@ -17,56 +18,21 @@ namespace Coffee.CSharpCompilerSettings
         [SerializeField] private CSharpLanguageVersion m_LanguageVersion = CSharpLanguageVersion.Latest;
         [SerializeField] private bool m_EnableDebugLog = false;
 
-        internal static SerializedObject GetSerializedObject()
-        {
-            return new SerializedObject(instance);
-        }
-
-        private static CscSettingsAsset Create()
+        private static CscSettingsAsset CreateFromProjectSettings()
         {
             s_Instance = CreateInstance<CscSettingsAsset>();
             if (File.Exists(k_SettingsPath))
                 JsonUtility.FromJsonOverwrite(File.ReadAllText(k_SettingsPath), s_Instance);
-            s_Instance.OnValidate();
             return s_Instance;
         }
 
         private static CscSettingsAsset s_Instance;
 
-        public static CscSettingsAsset instance
-        {
-            get { return s_Instance ? s_Instance : s_Instance = Create(); }
-        }
+        public static CscSettingsAsset instance => s_Instance ? s_Instance : s_Instance = CreateFromProjectSettings();
 
-        public string PackageName
-        {
-            get { return m_PackageName; }
-            set { m_PackageName = value; }
-        }
+        public string PackageId => m_PackageName + "." + m_PackageVersion;
 
-
-        public string PackageVersion
-        {
-            get { return m_PackageVersion; }
-            set { m_PackageVersion = value; }
-        }
-
-        public CSharpLanguageVersion CSharpLanguageVersion
-        {
-            get { return m_LanguageVersion; }
-            set { m_LanguageVersion = value; }
-        }
-
-        public string PackageId
-        {
-            get { return m_PackageName + "." + m_PackageVersion; }
-        }
-
-        public bool UseDefaultCompiler
-        {
-            get { return m_UseDefaultCompiler; }
-            set { m_UseDefaultCompiler = value; }
-        }
+        public bool UseDefaultCompiler => m_UseDefaultCompiler;
 
         public string LanguageVersion
         {
@@ -86,10 +52,7 @@ namespace Coffee.CSharpCompilerSettings
             }
         }
 
-        public bool EnableDebugLog
-        {
-            get { return m_EnableDebugLog; }
-        }
+        public bool EnableDebugLog => m_EnableDebugLog;
 
         public string AdditionalSymbols
         {
@@ -104,7 +67,7 @@ namespace Coffee.CSharpCompilerSettings
                             ? LVersion.CSharp8
                             : current;
 
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 if (LVersion.CSharp7 <= current) sb.Append("CSHARP_7_OR_NEWER;");
                 if (LVersion.CSharp7_1 <= current) sb.Append("CSHARP_7_1_OR_NEWER;");
                 if (LVersion.CSharp7_2 <= current) sb.Append("CSHARP_7_2_OR_NEWER;");
@@ -116,18 +79,13 @@ namespace Coffee.CSharpCompilerSettings
             }
         }
 
-        private static void LanguageVersionCheck(ref string[] symbols, LVersion current, LVersion version, string symbol)
-        {
-            symbols = version <= current
-                ? symbols.Union(new[] {symbol}).ToArray()
-                : symbols.Except(new[] {symbol}).ToArray();
-        }
-
         public static CscSettingsAsset GetAtPath(string path)
         {
             try
             {
-                return CreateFromJson(AssetImporter.GetAtPath(path).userData);
+                return string.IsNullOrEmpty(path)
+                    ? null
+                    : CreateFromJson(AssetImporter.GetAtPath(path).userData);
             }
             catch
             {
@@ -138,7 +96,7 @@ namespace Coffee.CSharpCompilerSettings
         public static CscSettingsAsset CreateFromJson(string json = "")
         {
             var setting = CreateInstance<CscSettingsAsset>();
-            JsonUtility.FromJsonOverwrite(File.ReadAllText(k_SettingsPath), setting);
+            JsonUtility.FromJsonOverwrite(json, setting);
             return setting;
         }
     }
