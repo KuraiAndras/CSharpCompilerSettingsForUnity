@@ -1,13 +1,18 @@
+using System;
+using System.IO;
 using UnityEditor;
+using UnityEngine;
 
 namespace Coffee.CSharpCompilerSettings
 {
     internal class CscSettingsProvider
     {
+        private static SerializedObject serializedObject;
+
         [SettingsProvider]
         private static SettingsProvider CreateSettingsProvider()
         {
-            var serializedObject = CscSettingsAsset.GetSerializedObject();
+            serializedObject = new SerializedObject(CscSettingsAsset.instance);
             var keywords = SettingsProvider.GetSearchKeywordsFromSerializedObject(serializedObject);
             return new SettingsProvider("Project/C# Compiler", SettingsScope.Project)
             {
@@ -19,29 +24,34 @@ namespace Coffee.CSharpCompilerSettings
 
         private static void OnGUI(string searchContext)
         {
-            var serializedObject = CscSettingsAsset.GetSerializedObject();
-            var spUseDefaultCompiler = serializedObject.FindProperty("m_UseDefaultCompiler");
-            var spPackageName = serializedObject.FindProperty("m_PackageName");
-            var spPackageVersion = serializedObject.FindProperty("m_PackageVersion");
-            var spLanguageVersion = serializedObject.FindProperty("m_LanguageVersion");
-            var spEnableDebugLog = serializedObject.FindProperty("m_EnableDebugLog");
+            if (serializedObject == null)
+                serializedObject = new SerializedObject(CscSettingsAsset.instance);
 
-            using (var ccs = new EditorGUI.ChangeCheckScope())
-            {
-                EditorGUILayout.PropertyField(spUseDefaultCompiler);
-                if (ccs.changed)
-                    Core.RequestScriptCompilation();
-            }
-
-            EditorGUILayout.PropertyField(spPackageName);
-            EditorGUILayout.PropertyField(spPackageVersion);
-            EditorGUILayout.PropertyField(spLanguageVersion);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_UseDefaultCompiler"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_PackageName"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_PackageVersion"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_LanguageVersion"));
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.PropertyField(spEnableDebugLog);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_EnableDebugLog"));
 
-            serializedObject.ApplyModifiedProperties();
+            if (GUILayout.Button("Revert"))
+            {
+                serializedObject = new SerializedObject(CscSettingsAsset.instance);
+            }
+            if (GUILayout.Button("Apply"))
+            {
+                serializedObject.ApplyModifiedProperties();
+                File.WriteAllText(CscSettingsAsset.k_SettingsPath, JsonUtility.ToJson(serializedObject.targetObject, true));
+                RequestScriptCompilation();
+            }
+        }
+
+        public static void RequestScriptCompilation()
+        {
+            Type.GetType("UnityEditor.Scripting.ScriptCompilation.EditorCompilationInterface, UnityEditor")
+                .Call("DirtyAllScripts");
         }
     }
 }
