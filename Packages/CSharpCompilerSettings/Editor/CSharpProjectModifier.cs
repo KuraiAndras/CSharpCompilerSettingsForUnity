@@ -1,3 +1,5 @@
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEditor;
 
@@ -7,9 +9,17 @@ namespace Coffee.CSharpCompilerSettings
     {
         private static string OnGeneratedCSProject(string path, string content)
         {
-            var setting = CscSettingsAsset.instance;
+            // Find asmdef.
+            var assemblyName = Path.GetFileNameWithoutExtension(path);
+            var asmdefPath = AssetDatabase.FindAssets("t:AssemblyDefinitionAsset " + Path.GetFileNameWithoutExtension(path))
+                .Select(x => AssetDatabase.GUIDToAssetPath(x))
+                .FirstOrDefault(x => Path.GetFileName(x) == assemblyName + ".asmdef");
+
+            // Core.LogDebug("<color=orange>OnGeneratedCSProject</color> {0} -> {1} ({2})", path, assemblyName, asmdefPath);
+            var setting = CscSettingsAsset.GetAtPath(asmdefPath) ?? CscSettingsAsset.instance;
             if (setting.UseDefaultCompiler) return content;
 
+            // Modify define symbols.
             var defines = Regex.Match(content, "<DefineConstants>(.*)</DefineConstants>").Groups[1].Value.Split(';', ',');
             defines = Core.ModifyDefineSymbols(defines, setting.AdditionalSymbols);
             var defineText = string.Join(";", defines);
