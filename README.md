@@ -8,11 +8,22 @@
 ## How to develop this package
 
 1. Fork the repository and create your branch from `develop`.
-3. Open the project and click `Open Sesame > Develop Mode`
-4. Develop the package
-5. Click `Window > Generals > Test Runner` to test
-6. Commit with [Angular Commit Message Conventions](https://gist.github.com/stephenparish/9941e89d80e2bc58a153)
-7. Create pull request
+2. Open the project and enable `Csc Settings > Develop Mode`  
+![](https://user-images.githubusercontent.com/12690315/95061815-10b7aa80-0737-11eb-9e3f-1b33c4f0ddbc.png)
+3. Develop the package
+  * CSharpCompilerSettings:
+    * `Assets/CSharpCompilerSettings`
+    * This assembly is included in the package.
+    * Publish as dll automatically to `Packages/CSharpCompilerSettings/Plugins`
+  * CSharpCompilerSettings.Dev:
+    * `Assets/CSharpCompilerSettings/Dev`
+    * This assembly is **not** included in the package.
+  * CSharpCompilerSettings.Editor:
+    * `Packages/CSharpCompilerSettings/Editor`
+    * This assembly is included in the package.
+4. Click `Window > Generals > Test Runner` to test
+5. Commit with [Angular Commit Message Conventions](https://gist.github.com/stephenparish/9941e89d80e2bc58a153)
+6. Create pull request
 
 For details, see [CONTRIBUTING](https://github.com/mob-sakai/CSharpCompilerSettingsForUnity/blob/upm/CONTRIBUTING.md) and [CODE_OF_CONDUCT](https://github.com/mob-sakai/CSharpCompilerSettingsForUnity/blob/upm/CODE_OF_CONDUCT.md).
 
