@@ -183,6 +183,16 @@ namespace Coffee.CSharpCompilerSettings
                     needToSaveSettings = true;
                     _assetPath = null;
                 }
+
+                if (GUILayout.Button(s_PublishText))
+                {
+                    _assetPath = null;
+                    s_AsmdefPathToPublish = importer.assetPath;
+                    s_AssemblyNameToPublish = Core.GetAssemblyName(importer.assetPath);
+                    Core.LogInfo("<b><color=#22aa22>Request to publish dll:</color> {0}</b>", s_AssemblyNameToPublish);
+
+                    importer.SaveAndReimport();
+                }
             }
 
             GUILayout.EndVertical();
