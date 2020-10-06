@@ -49,6 +49,7 @@ This package changes the C# compiler (csc) used on your Unity project, to suppor
 Let's enjoy C# 8.0 features with your Unity project!
 
 ![](https://user-images.githubusercontent.com/12690315/95178488-7456dc00-07fa-11eb-8489-63d6af311ed0.png)
+![](https://user-images.githubusercontent.com/12690315/95178483-728d1880-07fa-11eb-89e6-c29d98e2ab02.png)
 
 ### Features
 
@@ -58,8 +59,10 @@ Let's enjoy C# 8.0 features with your Unity project!
   * Change the nuget package name.
     * **[Microsoft.Net.Compilers][]: Official compiler (default, run on Unity built-in mono)**
     * [Microsoft.Net.Compilers.Toolset][]: Official compiler (run on dotnet)
+      * Resolve the [issue #2](https://github.com/mob-sakai/CSharpCompilerSettingsForUnity/issues/2)
     * [OpenSesame.Net.Compilers][]: Allows access to internals/privates in other assemblies (run on Unity built-in mono)
     * [OpenSesame.Net.Compilers.Toolset][]: Allows access to internals/privates in other assemblies (run on dotnet)
+      * Resolve the [issue #2](https://github.com/mob-sakai/CSharpCompilerSettingsForUnity/issues/2)
     * Or, your custom nuget package
   * Change the nuget package version.
     * 3.4.0: C# 8.0 Supported.
@@ -77,10 +80,14 @@ Let's enjoy C# 8.0 features with your Unity project!
     * 9.0 (preview)
 * Add the scripting define symbols based on language version on compiling.
   * e.g. `CSHARP_7_3_OR_LATER`, `CSHARP_8_OR_LATER`, `CSHARP_9_OR_LATER`
-* Modify the scripting define symbols for each `*.asmdef` file.
-  * Add/Remove specific symbols separated with semicolons (`';'`) or commas (`','`).
-  * The symbols starting with `'!'` will be removed.
-  * e.g. `SYMBOL_TO_ADD;!SYMBOL_TO_REMOVE;...`
+* Change the C# compiler settings for each `*.asmdef` file.
+  * Portability: The assembly works even in the projects that do not have this package installed.
+    * The best option when distributing as a package.
+  * Publish as Dll: Published dll works without this package.
+  * Modify the scripting define symbols for each `*.asmdef` file.
+    * Add/Remove specific symbols separated with semicolons (`';'`) or commas (`','`).
+    * The symbols starting with `'!'` will be removed.
+    * e.g. `SYMBOL_TO_ADD;!SYMBOL_TO_REMOVE;...`
 * Modify `langversion` property in *.csproj file.
 * If `dotnet` is required, install it automatically.
 * `CompilerType.BuiltIn` compiler option to disable this plugin.
