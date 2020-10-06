@@ -99,6 +99,8 @@ namespace Coffee.CSharpCompilerSettings
                 Selection.activeObject = null;
                 EditorApplication.delayCall += () => Selection.activeObject = activeObject;
             }
+
+            Selection.selectionChanged += () => { _assetPath = null; };
         }
 
         private static SerializedObject _serializedObject;
@@ -123,14 +125,22 @@ namespace Coffee.CSharpCompilerSettings
             // Enable.
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUI.BeginChangeCheck();
-            _hasPortableDll = EditorGUILayout.ToggleLeft(s_EnableText, _hasPortableDll);
-
+            _hasPortableDll = EditorGUILayout.ToggleLeft(s_EnableText, _hasPortableDll, EditorStyles.boldLabel);
             if (_hasPortableDll)
             {
-                EditorGUILayout.PropertyField(_serializedObject.FindProperty("m_UseDefaultCompiler"));
-                EditorGUILayout.PropertyField(_serializedObject.FindProperty("m_PackageName"));
-                EditorGUILayout.PropertyField(_serializedObject.FindProperty("m_PackageVersion"));
-                EditorGUILayout.PropertyField(_serializedObject.FindProperty("m_LanguageVersion"));
+                var spCompilerType = _serializedObject.FindProperty("m_CompilerType");
+                EditorGUILayout.PropertyField(spCompilerType);
+
+                if (spCompilerType.intValue == (int) CompilerType.CustomPackage)
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(_serializedObject.FindProperty("m_PackageName"));
+                    EditorGUILayout.PropertyField(_serializedObject.FindProperty("m_PackageVersion"));
+                    EditorGUILayout.PropertyField(_serializedObject.FindProperty("m_LanguageVersion"));
+                    EditorGUI.indentLevel--;
+                }
+
+                EditorGUILayout.PropertyField(_serializedObject.FindProperty("m_ModifySymbols"));
             }
 
             _changed |= EditorGUI.EndChangeCheck();

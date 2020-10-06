@@ -27,14 +27,22 @@ namespace Coffee.CSharpCompilerSettings
             if (serializedObject == null)
                 serializedObject = new SerializedObject(CscSettingsAsset.instance);
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_UseDefaultCompiler"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_PackageName"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_PackageVersion"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_LanguageVersion"));
+            var spCompilerType = serializedObject.FindProperty("m_CompilerType");
+            EditorGUILayout.PropertyField(spCompilerType);
+
+            if (spCompilerType.intValue == (int) CompilerType.CustomPackage)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("m_PackageName"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("m_PackageVersion"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("m_LanguageVersion"));
+                EditorGUI.indentLevel--;
+            }
 
             EditorGUILayout.Space();
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_EnableDebugLog"));
+            EditorGUILayout.LabelField("Debug", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_EnableLogging"));
 
             // Controls
             using (new EditorGUI.DisabledScope(!serializedObject.hasModifiedProperties))

@@ -226,7 +226,7 @@ namespace Coffee.CSharpCompilerSettings
                 var settings = IsGlobal
                     ? CscSettingsAsset.instance
                     : CscSettingsAsset.GetAtPath(asmdefPath);
-                if (!settings || settings.UseDefaultCompiler)
+                if (!settings || !settings.ShouldToRecompile)
                 {
                     LogDebug("  <color=#bbbb44><Skipped> Assembly <b>'{0}'</b> does not need to be recompiled.</color>", assemblyName);
                     return;
