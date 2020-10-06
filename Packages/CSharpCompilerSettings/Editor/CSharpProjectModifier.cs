@@ -15,9 +15,8 @@ namespace Coffee.CSharpCompilerSettings
                 .Select(x => AssetDatabase.GUIDToAssetPath(x))
                 .FirstOrDefault(x => Path.GetFileName(x) == assemblyName + ".asmdef");
 
-            // Core.LogDebug("<color=orange>OnGeneratedCSProject</color> {0} -> {1} ({2})", path, assemblyName, asmdefPath);
+            Core.LogDebug("<color=orange>OnGeneratedCSProject</color> {0} -> {1} ({2})", path, assemblyName, asmdefPath);
             var setting = CscSettingsAsset.GetAtPath(asmdefPath) ?? CscSettingsAsset.instance;
-            if (setting.UseDefaultCompiler) return content;
 
             // Modify define symbols.
             var defines = Regex.Match(content, "<DefineConstants>(.*)</DefineConstants>").Groups[1].Value.Split(';', ',');
@@ -26,7 +25,8 @@ namespace Coffee.CSharpCompilerSettings
             content = Regex.Replace(content, "<DefineConstants>(.*)</DefineConstants>", string.Format("<DefineConstants>{0}</DefineConstants>", defineText), RegexOptions.Multiline);
 
             // Language version.
-            content = Regex.Replace(content, "<LangVersion>.*</LangVersion>", "<LangVersion>" + setting.LanguageVersion + "</LangVersion>", RegexOptions.Multiline);
+            if (!setting.UseDefaultCompiler)
+                content = Regex.Replace(content, "<LangVersion>.*</LangVersion>", "<LangVersion>" + setting.LanguageVersion + "</LangVersion>", RegexOptions.Multiline);
 
             return content;
         }
