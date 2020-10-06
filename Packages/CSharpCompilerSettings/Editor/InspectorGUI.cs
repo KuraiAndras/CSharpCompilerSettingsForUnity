@@ -107,11 +107,17 @@ namespace Coffee.CSharpCompilerSettings
         private static bool _hasPortableDll = false;
         private static bool _changed = false;
         private static string _assetPath;
+        private static string[] _ignoredAssetPaths = {
+            "Assets/CSharpCompilerSettings/Dev/CSharpCompilerSettings.Dev.asmdef",
+            "Assets/CSharpCompilerSettings/CSharpCompilerSettings.asmdef",
+            "Packages/com.coffee.csharp-compiler-settings/Editor/CSharpCompilerSettings.Editor.asmdef",
+        };
+
 
         private static void OnPostHeaderGUI(Editor editor)
         {
             var importer = editor.target as AssemblyDefinitionImporter;
-            if (!importer || 1 < editor.targets.Length)
+            if (!importer || 1 < editor.targets.Length || _ignoredAssetPaths.Contains(importer.assetPath))
                 return;
 
             if (_assetPath == null || _assetPath != importer.assetPath)
