@@ -175,6 +175,7 @@ namespace Coffee.CSharpCompilerSettings
                     {
                         _assetPath = null;
                         EnablePortableDll(importer.assetPath, true);
+                        AutoImporter.ImportOnFinishedCompilation(importer.assetPath);
                     }
                 }
 
