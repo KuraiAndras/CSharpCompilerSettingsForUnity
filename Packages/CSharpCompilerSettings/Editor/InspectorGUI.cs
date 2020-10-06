@@ -221,7 +221,7 @@ namespace Coffee.CSharpCompilerSettings
                 // Copy meta.
                 File.Copy(src + ".meta~", tmpDst + ".meta", true);
                 var meta = File.ReadAllText(tmpDst + ".meta");
-                meta = Regex.Replace(meta, "${GUID}", guid);
+                meta = Regex.Replace(meta, "<<GUID>>", guid);
                 File.WriteAllText(tmpDst + ".meta", meta);
                 CopyFileIfNeeded(tmpDst + ".meta", dst + ".meta");
 

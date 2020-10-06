@@ -16,6 +16,7 @@ namespace Coffee.CSharpCompilerSettings
 
         [SerializeField] private bool requested;
 
+#if CSC_SETTINGS_DEVELOP
         [InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()
         {
@@ -33,7 +34,9 @@ namespace Coffee.CSharpCompilerSettings
 
             instance.requested = true;
         }
+#endif
 
+        [MenuItem("Csc Settings/Revompile")]
         private static void Recompile()
         {
             var appContents = EditorApplication.applicationContentsPath;
