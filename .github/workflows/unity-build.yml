@@ -58,7 +58,7 @@ jobs:
 
           # Activation failed.
           if [ $FAILED ]; then
-            echo "::set-env name=UNITY_VERSION::`echo ${{ matrix.unity }} | cut -d '-' -f 1`"
+            echo "UNITY_VERSION=`echo ${{ matrix.unity }} | cut -d '-' -f 1`" >> $GITHUB_ENV
             echo "::error:: the unity activation may have failed. manual activation is required.%0A \
               1. download the artifact's .alf file.%0A \
               2. Go to https://license.unity3d.com/manual to activate manually.%0A \
@@ -73,7 +73,7 @@ jobs:
 
           # Set working directory.
           WORKING_DIR="${{ secrets.WORKING_DIR }}"
-          echo "::set-env name=WORKING_DIR::${WORKING_DIR:-.}"
+          echo "WORKING_DIR=${WORKING_DIR:-.}" >> $GITHUB_ENV
 
       # (On failed activation) Upload unity activation file
       - name: Upload unity activation file
@@ -86,16 +86,39 @@ jobs:
       # Checkout
       - uses: actions/checkout@v2
 
-      # Test 1: Build
-      - name: "Test 1: Build"
+      # Build editor tests
+      - name: "Build editor tests"
         if: always() && steps.activation.conclusion == 'success'
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath .
+          xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' \
+          /opt/Unity/Editor/Unity -batchmode -nographics -silent-crashes -logFile -projectPath . \
+            -runEditorTests -editorTestsResultFile ./editor_unittest.xml \
+            || [ -e ./editor_unittest.xml ] && exit 0 || exit 1
 
-      # Test 2: Install via UPM
-      - name: "Test 2: Install via UPM (1)"
+      # Validate editor test results
+      - name: "Validate editor test results"
         if: always() && steps.activation.conclusion == 'success'
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          /opt/Unity/Editor/Unity -quit -batchmode -nographics -silent-crashes -logFile -projectPath ./Test
+          SUMMARY=`grep '<test-run ' ./editor_unittest.xml \
+            | perl -pe 's/.*(result="[^"]*.*asserts="[^"]*).*/$1/' \
+            | tr -d '"'`
+
+          echo "${SUMMARY}"
+
+          FAILED=`cat editor_unittest.xml \
+            | perl -0pe 's/(<\/test-case>).*?(<test-case [^>]+>)/$1\n$2/sm' \
+            | perl -0pe 's/^.*?(<test-case )/$1/sm' \
+            | perl -pe 's/^ *(.*)\n/$1#__LF__#/g' \
+            | perl -pe 's/(<\/test-case>)/$1\n/g' \
+            | grep 'result="Failed"' \
+            | perl -pe 's/.*fullname="([^"]*).*<message><!\[CDATA\[ *(.*)\]\]><\/message>.*/[NG] $1#__LF__#$2/' \
+            | perl -pe 's/(#__LF__#|\n)/%0A/g'`
+
+          echo "${FAILED}"
+
+          if [ -n "`echo ${FAILED} | grep '\[NG\]'`" ]; then
+            echo "::error:: ${FAILED}"
+            exit 1
+          fi
