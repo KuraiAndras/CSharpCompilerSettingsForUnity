@@ -161,7 +161,7 @@ namespace Coffee.CSharpCompilerSettings
 
             // Change exe file path.
             LogDebug("Change csc to {0}", compilerInfo.Value.Path);
-            if (compilerInfo.Value.Type == CompilerType.NetFramework)
+            if (compilerInfo.Value.Runtime == CompilerRuntime.NetFramework)
             {
                 if (Application.platform == RuntimePlatform.WindowsEditor)
                 {
@@ -284,7 +284,7 @@ namespace Coffee.CSharpCompilerSettings
             {
                 LogException("Custom csc is not installed. {0}", settings.PackageId);
             }
-            else if (compilerInfo.Value.Type == CompilerType.NetCore)
+            else if (compilerInfo.Value.Runtime == CompilerRuntime.NetCore)
             {
                 var dotnetPath = DotnetRuntime.GetInstalledPath();
                 if (string.IsNullOrEmpty(dotnetPath))

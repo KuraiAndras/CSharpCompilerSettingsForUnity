@@ -21,9 +21,9 @@ namespace Coffee.CSharpCompilerSettings
 
         private static readonly CompilerFilter[] CompilerFilters = new[]
         {
-            new CompilerFilter(CompilerType.NetCore, PathCombine("tasks", "netcoreapp3.1", "bincore", "csc.dll")),
-            new CompilerFilter(CompilerType.NetCore, PathCombine("tasks", "netcoreapp2.1", "bincore", "csc.dll")),
-            new CompilerFilter(CompilerType.NetFramework, PathCombine("tools", "csc.exe")),
+            new CompilerFilter(CompilerRuntime.NetCore, PathCombine("tasks", "netcoreapp3.1", "bincore", "csc.dll")),
+            new CompilerFilter(CompilerRuntime.NetCore, PathCombine("tasks", "netcoreapp2.1", "bincore", "csc.dll")),
+            new CompilerFilter(CompilerRuntime.NetFramework, PathCombine("tools", "csc.exe")),
         };
 
         public static CompilerInfo? GetInstalledPath(string packageId)
@@ -52,7 +52,7 @@ namespace Coffee.CSharpCompilerSettings
                 if (!File.Exists(cscPath))
                     continue;
 
-                compilerInfo = new CompilerInfo(filter.Type, cscPath);
+                compilerInfo = new CompilerInfo(filter.Runtime, cscPath);
                 return true;
             }
 

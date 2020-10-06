@@ -2,12 +2,12 @@ namespace Coffee.CSharpCompilerSettings
 {
     internal readonly struct CompilerInfo
     {
-        public readonly CompilerType Type;
+        public readonly CompilerRuntime Runtime;
         public readonly string Path;
 
-        public CompilerInfo(CompilerType type, string path)
+        public CompilerInfo(CompilerRuntime runtime, string path)
         {
-            Type = type;
+            Runtime = runtime;
             Path = path;
         }
     }
