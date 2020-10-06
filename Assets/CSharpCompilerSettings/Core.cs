@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
@@ -114,10 +115,8 @@ namespace Coffee.CSharpCompilerSettings
             var tScriptCompilerBase = Type.GetType("UnityEditor.Scripting.Compilers.ScriptCompilerBase, UnityEditor");
             var fiProcess = tScriptCompilerBase.GetField("process", BindingFlags.NonPublic | BindingFlags.Instance);
             var psi = compiler.Get("process", fiProcess).Call("GetProcessStartInfo") as ProcessStartInfo;
-            LogDebug("current process: {0}", (psi.FileName + " " + psi.Arguments));
-
-            var command = (psi.FileName + " " + psi.Arguments).Replace('\\', '/')
-                .Replace(EditorApplication.applicationContentsPath.Replace('\\', '/'), "@APP_CONTENTS@");
+            var oldCommand = (psi.FileName + " " + psi.Arguments).Replace('\\', '/');
+            var command = oldCommand.Replace(EditorApplication.applicationContentsPath.Replace('\\', '/'), "@APP_CONTENTS@");
             var isDefaultCsc = Regex.IsMatch(command, "@APP_CONTENTS@/[^ ]*(mcs|csc)");
 
             // csc is not Unity default. It is already modified.
@@ -149,18 +148,30 @@ namespace Coffee.CSharpCompilerSettings
 
 
             // Modify scripting define symbols.
-            LogDebug("Modify scripting define symbols: {0}", responseFile);
             var defines = Regex.Matches(text, "^/define:(.*)$", RegexOptions.Multiline)
                 .Cast<Match>()
                 .Select(x => x.Groups[1].Value);
 
             text = Regex.Replace(text, "[\r\n]+/define:[^\r\n]+", "");
-            foreach (var d in ModifyDefineSymbols(defines, setting.AdditionalSymbols))
+            var modifiedDefines = ModifyDefineSymbols(defines, setting.AdditionalSymbols);
+            foreach (var d in modifiedDefines)
                 text += "\n/define:" + d;
+
+            if (CscSettingsAsset.instance.EnableDebugLog)
+            {
+                var sb = new StringBuilder();
+                foreach (var added in modifiedDefines.Except(defines))
+                    sb.AppendFormat("<color=#22aa22><b>{0}</b></color> (added)\n", added);
+                foreach (var removed in defines.Except(modifiedDefines))
+                    sb.AppendFormat("<color=#bb4444><b>{0}</b></color> (removed)\n", removed);
+                foreach (var added in modifiedDefines.Intersect(defines))
+                    sb.AppendFormat("{0}\n", added);
+
+                LogDebug("Modify scripting define symbols:\n{0}", sb);
+            }
 
 
             // Change exe file path.
-            LogDebug("Change csc to {0}", compilerInfo.Value.Path);
             if (compilerInfo.Value.Runtime == CompilerRuntime.NetFramework)
             {
                 if (Application.platform == RuntimePlatform.WindowsEditor)
@@ -183,7 +194,7 @@ namespace Coffee.CSharpCompilerSettings
             text = Regex.Replace(text, "\n", Environment.NewLine);
             File.WriteAllText(responseFile, text);
 
-            LogDebug("Restart compiler process: {0} {1}", psi.FileName, psi.Arguments);
+            LogDebug("Restart compiler process: {0} {2}\n  old command = {0}", psi.FileName, psi.Arguments, oldCommand);
             var program = tProgram.New(psi);
             program.Call("Start");
             compiler.Set("process", program, fiProcess);

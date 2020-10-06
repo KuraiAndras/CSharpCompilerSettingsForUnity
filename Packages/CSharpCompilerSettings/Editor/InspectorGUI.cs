@@ -208,7 +208,7 @@ namespace Coffee.CSharpCompilerSettings
 
                 // Copy dll with renaming assembly name.
                 File.Copy(src, tmpDst, true);
-                AssemblyRenamer.Rename(tmpDst, "CSharpCompilerSettings_" + guid);
+                AssemblyRenamer.Rename(tmpDst, Path.GetFileNameWithoutExtension(dst));
                 CopyFileIfNeeded(tmpDst, dst);
 
                 // Copy meta.
