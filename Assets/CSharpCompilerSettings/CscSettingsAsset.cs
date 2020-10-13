@@ -89,7 +89,7 @@ namespace Coffee.CSharpCompilerSettings
         {
             try
             {
-                return string.IsNullOrEmpty(path)
+                return !Core.HasPortableDll(path)
                     ? null
                     : CreateFromJson(AssetImporter.GetAtPath(path).userData);
             }
