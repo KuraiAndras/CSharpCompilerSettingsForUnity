@@ -50,8 +50,8 @@ namespace Coffee.CSharpCompilerSettings
                     case CSharpLanguageVersion.CSharp7_1: return "7.1";
                     case CSharpLanguageVersion.CSharp7_2: return "7.2";
                     case CSharpLanguageVersion.CSharp7_3: return "7.3";
-                    case CSharpLanguageVersion.CSharp8: return "8";
-                    case CSharpLanguageVersion.CSharp9: return "9";
+                    case CSharpLanguageVersion.CSharp8: return "8.0";
+                    case CSharpLanguageVersion.CSharp9: return "9.0";
                     case CSharpLanguageVersion.Preview: return "preview";
                     default: return "latest";
                 }
