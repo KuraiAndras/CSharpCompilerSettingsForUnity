@@ -1,3 +1,13 @@
+## [1.1.1](https://github.com/mob-sakai/CSharpCompilerSettingsForUnity/compare/v1.1.0...v1.1.1) (2020-10-13)
+
+
+### Bug Fixes
+
+* change language version for 8 & 9 to 8.0 & 9.0 ([2ca4892](https://github.com/mob-sakai/CSharpCompilerSettingsForUnity/commit/2ca48927cfcbacd4ac26e38148893334fc008171))
+* change the external exe path ([0bc2b46](https://github.com/mob-sakai/CSharpCompilerSettingsForUnity/commit/0bc2b46777fd758a569aa2c339c77a87fff5c955))
+* log for compile command is incorrect ([b551b82](https://github.com/mob-sakai/CSharpCompilerSettingsForUnity/commit/b551b82743e0b759a07f218c6d28ef9917dc2ed9))
+* the setting is incorrect for asmdef ([6b16210](https://github.com/mob-sakai/CSharpCompilerSettingsForUnity/commit/6b1621042b55cbe6a82138b29b029b1647cc79f7))
+
 # [1.1.0](https://github.com/mob-sakai/CSharpCompilerSettingsForUnity/compare/v1.0.1...v1.1.0) (2020-10-06)
 
 
