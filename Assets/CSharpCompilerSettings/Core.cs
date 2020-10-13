@@ -194,7 +194,7 @@ namespace Coffee.CSharpCompilerSettings
             text = Regex.Replace(text, "\n", Environment.NewLine);
             File.WriteAllText(responseFile, text);
 
-            LogDebug("Restart compiler process: {0} {2}\n  old command = {0}", psi.FileName, psi.Arguments, oldCommand);
+            LogDebug("Restart compiler process: {0} {1}\n  old command = {2}", psi.FileName, psi.Arguments, oldCommand);
             var program = tProgram.New(psi);
             program.Call("Start");
             compiler.Set("process", program, fiProcess);
