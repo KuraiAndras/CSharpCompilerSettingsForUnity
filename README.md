@@ -10,9 +10,9 @@ Change the C# compiler (csc) used on your Unity project, as you like!
 ![](https://img.shields.io/badge/Unity%202018.3%20or%20later-supported-blue.svg)
 ![](https://img.shields.io/badge/Unity%202019.x-supported-blue.svg)
 ![](https://img.shields.io/badge/Unity%202020.x-supported-blue.svg)  
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mob-sakai/CSharpCompilerSettingsForUnity/unity-test)
 [![Test](https://mob-sakai.testspace.com/spaces/130862/badge?token=43a50d2fc998aa362d36934597de0c84527e5690)](https://mob-sakai.testspace.com/spaces/130862)
 [![CodeCoverage](https://mob-sakai.testspace.com/spaces/130862/metrics/99758/badge)](https://mob-sakai.testspace.com/spaces/130862/current/Code%20Coverage/Code%20Coverage")
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mob-sakai/CSharpCompilerSettingsForUnity/unity-test)
 
 << [Description](#description) | [Installation](#installation) | [Usage](#usage) | [Contributing](#contributing) >>
 
@@ -51,8 +51,8 @@ However, unfortunately, [there are no plans to backport to Unity 2020.1 or earli
 This package changes the C# compiler (csc) used on your Unity project, to support C# 8.0.  
 Let's enjoy C# 8.0 features with your Unity project!
 
-![](https://user-images.githubusercontent.com/12690315/95178488-7456dc00-07fa-11eb-8489-63d6af311ed0.png)
-![](https://user-images.githubusercontent.com/12690315/95178483-728d1880-07fa-11eb-89e6-c29d98e2ab02.png)
+![](https://user-images.githubusercontent.com/12690315/97001486-62ec2e80-1573-11eb-9003-d40eb8ed8904.png)
+![](https://user-images.githubusercontent.com/12690315/97001169-e3f6f600-1572-11eb-8504-c528130c2234.png)
 
 ### Features
 
@@ -158,11 +158,11 @@ Or, use [UpmGitExtension](https://github.com/mob-sakai/UpmGitExtension) to insta
 ![](https://user-images.githubusercontent.com/12690315/92742741-e3d3da00-f3ba-11ea-8314-4cabd88c1b2c.png)
 2. Select `C# Compiler` tab
 3. Set `Compiler Type` to `Custom Package`, to use custom compiler package.  
-![](https://user-images.githubusercontent.com/12690315/95178488-7456dc00-07fa-11eb-8489-63d6af311ed0.png)
-3. Input `Package Name`, `Package Version`, `Language Version` for compilation.
+![](https://user-images.githubusercontent.com/12690315/97001486-62ec2e80-1573-11eb-9003-d40eb8ed8904.png)
+1. Input `Package Name`, `Package Version`, `Language Version` for compilation.
    * See [features](#features) section.
-4. Press `Apply` button to save settings.
-5. It will automatically request a recompilation.  
+2. Press `Apply` button to save settings.
+3. It will automatically request a recompilation.  
 The selected nuget package will be used for compilation.
 6. Enjoy!
 
@@ -187,7 +187,7 @@ The project setting asset for C# Compiler will be saved in `ProjectSettings/CSha
 
 1. Select a `*.asmodef` file
 2. Turn on `Enable C# Compilier Settings` to configure.  
-![](https://user-images.githubusercontent.com/12690315/95178483-728d1880-07fa-11eb-89e6-c29d98e2ab02.png)
+![](https://user-images.githubusercontent.com/12690315/97001169-e3f6f600-1572-11eb-8504-c528130c2234.png)
 3. Set `Compiler Type` to `Custom Package`, to use custom compiler package.
 4. Input `Package Name`, `Package Version`, `Language Version` and `Modify Symbols` for compilation.
    * See [features](#features) section.
@@ -271,8 +271,7 @@ With your support, I can spend more time on development. :)
 
 ## Author
 
-* [mob-sakai](https://github.com/mob-sakai) [![](https://img.shields.io/twitter/follow/mob_sakai.svg?label=Follow&style=social)](https://twitter.com/intent/follow?screen_name=mob_sakai) ![GitHub followers](https://img.shields.io/github/followers/mob-sakai?style=social)  
-![](https://user-images.githubusercontent.com/12690315/96912074-bcede500-14dc-11eb-8acd-3fdd8d0e4606.png)  
+* ![](https://user-images.githubusercontent.com/12690315/96986908-434a0b80-155d-11eb-8275-85138ab90afa.png) [mob-sakai](https://github.com/mob-sakai) [![](https://img.shields.io/twitter/follow/mob_sakai.svg?label=Follow&style=social)](https://twitter.com/intent/follow?screen_name=mob_sakai) ![GitHub followers](https://img.shields.io/github/followers/mob-sakai?style=social)
 
 ## See Also
 
